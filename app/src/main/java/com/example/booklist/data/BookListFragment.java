@@ -1,6 +1,5 @@
 package com.example.booklist.data;
 
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
