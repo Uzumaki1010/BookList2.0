@@ -8,8 +8,20 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.TextOptions;
+import com.baidu.mapapi.model.LatLng;
 
 
 /**
@@ -28,6 +40,26 @@ public class MapViewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_map_view, container, false);
         mapView=(MapView)view.findViewById(R.id.bmapView);
+
+        BaiduMap baiduMap = mapView.getMap();
+        LatLng centerPoint = new LatLng(22.2559,113.541112);
+        MapStatus mMapStatus = new MapStatus.Builder().target(centerPoint).zoom(17).build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        baiduMap.setMapStatus(mMapStatusUpdate);
+
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.book_icon1);
+        MarkerOptions markerOption = new MarkerOptions().icon(bitmap).position(centerPoint);
+        Marker marker = (Marker) baiduMap.addOverlay(markerOption);
+
+        OverlayOptions textOption = new TextOptions().bgColor(0xAAFFFF00).fontSize(50).fontColor(0xFFFF00FF).text("暨南大学珠海").rotate(0).position(centerPoint);
+        baiduMap.addOverlay(textOption);
+        baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                Toast.makeText(getContext(), "Marker被点击了！", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
         return view;
     }
     @Override
