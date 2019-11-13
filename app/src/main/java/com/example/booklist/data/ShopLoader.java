@@ -1,5 +1,6 @@
 package com.example.booklist.data;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.example.booklist.data.model.Shop;
@@ -19,7 +20,7 @@ public class ShopLoader {
         return shops;
     }
 
-    private ArrayList<Shop> shops;
+    private ArrayList<Shop> shops=new ArrayList<>();
 
     public String download(String urlString){
         try{
@@ -72,5 +73,16 @@ public class ShopLoader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void load(final Handler handler, final String url){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String content=download(url);
+                parseJson(content);
+                handler.sendEmptyMessage(1);
+            }
+        }).start();
     }
 }

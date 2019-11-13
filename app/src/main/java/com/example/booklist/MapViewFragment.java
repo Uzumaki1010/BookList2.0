@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,10 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.example.booklist.data.ShopLoader;
+import com.example.booklist.data.model.Shop;
+
+import java.util.ArrayList;
 
 
 /**
@@ -60,8 +66,34 @@ public class MapViewFragment extends Fragment {
                 return false;
             }
         });
+        final ShopLoader shopLoader=new ShopLoader();
+        Handler handler=new Handler(){
+            public void handleMessage(Message msg){
+                drawShops(shopLoader.getShops());
+            }
+        };
+        shopLoader.load(handler,"http://file.nidama.net/class/mobile_develop/data/bookstore.json");
         return view;
     }
+
+    void drawShops(ArrayList<Shop>shops){
+        if(mapView==null)
+            return;
+        BaiduMap mBaidumap=mapView.getMap();
+        for(int i=0;i<shops.size();i++){
+            Shop shop=shops.get(i);
+
+            LatLng cenpt=new LatLng(shop.getLatitude(),shop.getLongitude());
+
+            BitmapDescriptor bitmap=BitmapDescriptorFactory.fromResource(R.drawable.book_icon1);
+            MarkerOptions markerOption=new MarkerOptions().icon(bitmap).position(cenpt);
+            Marker marker=(Marker)mBaidumap.addOverlay(markerOption);
+
+            OverlayOptions textOption=new TextOptions().bgColor(0xAAFFFF00).fontSize(50).fontColor(0xFFFF00FF).text(shop.getName()).rotate(0).position(cenpt);
+            mBaidumap.addOverlay(textOption);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
